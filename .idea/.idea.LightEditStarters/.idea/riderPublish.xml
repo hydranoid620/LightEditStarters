@@ -7,6 +7,9 @@
         <option value="$USER_HOME$/Desktop/Stuff/Shortcuts/CLion" />
         <option value="$USER_HOME$/Desktop/Stuff/Shortcuts/IDEA" />
         <option value="$USER_HOME$/Desktop/Stuff/Shortcuts/Rider" />
+        <option value="$PROJECT_DIR$/CLionStarter/Publish" />
+        <option value="$PROJECT_DIR$/WebStormStarter/Publish" />
+        <option value="$PROJECT_DIR$/IDEAStarter/Publish" />
       </list>
     </option>
   </component>

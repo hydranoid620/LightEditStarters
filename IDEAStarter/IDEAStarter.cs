@@ -1,19 +1,38 @@
-﻿namespace IDEA
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using IWshRuntimeLibrary;
+using Microsoft.Extensions.Configuration;
+using File = System.IO.File;
+
+namespace IDEA
 {
     static class IDEAStarter
     {
         static void Main(string[] args)
         {
-            System.Diagnostics.Process process = new()
+            //Get configs from appsettings.json
+            var config = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();
+            ProcessStartInfo processStartInfo = config.GetSection(nameof(ProcessStartInfo)).Get<ProcessStartInfo>();
+
+            if (!File.Exists(processStartInfo.FileName))
             {
-                StartInfo =
-                {
-                    FileName = "C:\\Users\\Nicholas\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\JetBrains Toolbox\\IntelliJ IDEA Ultimate.lnk",
-                    Arguments = $"-e \"{args[0]}\"",
-                    CreateNoWindow = true,
-                    UseShellExecute = true
-                }
-            };
+                Console.WriteLine("\"FileName\" property in appsettings.json is invalid. Set this to the location of IntelliJ IDEA.");
+                Console.WriteLine("Press any key to exit.");
+                Console.ReadKey();
+                Environment.Exit(1);
+            }
+
+            //If the user entered a shortcut path, resolve it first
+            if (Path.GetExtension(processStartInfo.FileName) == ".lnk")
+            {
+                WshShell shell = new();
+                processStartInfo.FileName = shell.CreateShortcut(processStartInfo.FileName).TargetPath;
+            }
+
+            processStartInfo.Arguments = $"-e \"{args[0]}\"";
+
+            Process process = new() {StartInfo = processStartInfo};
             process.Start();
         }
     }
